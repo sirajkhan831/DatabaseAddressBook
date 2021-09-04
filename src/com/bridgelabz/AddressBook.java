@@ -196,7 +196,7 @@ public class AddressBook {
         try {
             Connection conn;
             Statement statement;
-            conn = DriverManager.getConnection("jdbc:sqlite:D:\\IDE Save Location\\IntelliJ\\AddressBookContact\\Contacts.db");
+            conn = DriverManager.getConnection("jdbc:sqlite:Contacts.db");
             String Query = "SELECT * FROM " + tableName;
             statement = conn.createStatement();
             rs = statement.executeQuery(Query);
@@ -208,7 +208,7 @@ public class AddressBook {
     // addToDatabase method to add a new contact to database
     public static void addToDatabase(Contact contact) {
         try {
-            Connection conn = DriverManager.getConnection("jdbc:sqlite:D:\\IDE Save Location\\IntelliJ\\AddressBookContact\\Contacts.db");
+            Connection conn = DriverManager.getConnection("jdbc:sqlite:Contacts.db");
             Statement statement = conn.createStatement();
             statement.execute(("INSERT INTO " + tableName + " (FirstName, LastName, Number, Email, Address, City, State, ZipCode) " +
                     "VALUES(" + "'" + contact.getFirstName() + "'" + ", " + "'" + contact.getLastName() + "'" + ", " + "'" + contact.getNumber() + "'" + ", " + "'" + contact.getEmail() + "'" + ", " + "'" + contact.getAddress() + "'" + ", " + "'" + contact.getCity() + "'" + ", " + "'" + contact.getState() + "'" + ", " + contact.getZipCode() + ")"));
