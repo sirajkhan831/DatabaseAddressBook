@@ -21,18 +21,19 @@ public class Contact {
         this.zipCode = zipCode;
     }
 
-    public String getFirstName() {
-        return firstName;
+    @Override
+    public String toString() {
+        return "Name     :  " + firstName + " " + lastName+"\n"+
+        "Number   :  " + number+"\n"+
+        "Email    :  " + email+"\n"+
+        "Address  :  " + Address+"\n"+
+        "City     :  " + city+"\n"+
+        "State    :  " + state+"\n"+
+        "ZipCode  :  " + zipCode + "\n";
     }
 
-    public void getAll(){
-        System.out.println("Name     :  "+firstName+" "+lastName);
-        System.out.println("Number   :  "+number);
-        System.out.println("Email    :  "+email);
-        System.out.println("Address  :  "+Address);
-        System.out.println("City     :  "+city);
-        System.out.println("State    :  "+state);
-        System.out.println("ZipCode  :  "+zipCode+"\n");
+    public String getFirstName() {
+        return firstName;
     }
 
     public String getLastName() {

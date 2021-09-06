@@ -7,11 +7,10 @@ import java.util.Objects;
 import java.util.Scanner;
 
 public class AddressBook {
-
     public static void main(String[] args) throws SQLException {
         LinkedList<Contact> contact = new LinkedList<>();
-        while (rs.next()) {
-            sort(contact, importContact());
+        while (Database.rs.next()) {
+            sort(contact, Database.importContact());
         }
         System.out.println("Hello welcome to your address book.");
         menu(contact);
@@ -37,7 +36,7 @@ public class AddressBook {
             }
         } else if (option == 2) {
             Contact newContact = addContact();
-            addToDatabase(newContact);
+            Database.addToDatabase(newContact);
             sort(contact, newContact);
             printList(contact);
             contactDetails(contact);
@@ -80,7 +79,7 @@ public class AddressBook {
         if (number == 99) {
             menu(contact);
         } else
-            contact.get(number).getAll();
+            System.out.println(contact.get(number));
     }
 
     // printList for printing the sorted contacts in the console
@@ -186,54 +185,5 @@ public class AddressBook {
 
             }
         }
-    }
-
-    // Database code section starts from here
-
-    static String tableName = "contactDatabase";
-    static ResultSet rs;
-    static {
-        try {
-            Connection conn;
-            Statement statement;
-            conn = DriverManager.getConnection("jdbc:sqlite:Contacts.db");
-            String Query = "SELECT * FROM " + tableName;
-            statement = conn.createStatement();
-            rs = statement.executeQuery(Query);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // addToDatabase method to add a new contact to database
-    public static void addToDatabase(Contact contact) {
-        try {
-            Connection conn = DriverManager.getConnection("jdbc:sqlite:Contacts.db");
-            Statement statement = conn.createStatement();
-            statement.execute(("INSERT INTO " + tableName + " (FirstName, LastName, Number, Email, Address, City, State, ZipCode) " +
-                    "VALUES(" + "'" + contact.getFirstName() + "'" + ", " + "'" + contact.getLastName() + "'" + ", " + "'" + contact.getNumber() + "'" + ", " + "'" + contact.getEmail() + "'" + ", " + "'" + contact.getAddress() + "'" + ", " + "'" + contact.getCity() + "'" + ", " + "'" + contact.getState() + "'" + ", " + contact.getZipCode() + ")"));
-            statement.close();
-            conn.close();
-        } catch (SQLException e) {
-            System.out.println(e.getErrorCode());
-        }
-    }
-
-    // importing contacts from database
-    public static Contact importContact() {
-        try {
-            String firstName = rs.getString("FirstName");
-            String lastName = "";
-            String contact = rs.getString("Number");
-            String email = rs.getString("Email");
-            String address = rs.getString("Address");
-            String city = rs.getString("City");
-            String state = rs.getString("State");
-            int zipcode = rs.getInt("ZipCode");
-            return new Contact(firstName, lastName, contact, address, city, state, email, zipcode);
-        } catch (SQLException e) {
-            System.out.println("Exception : " + e);
-        }
-        return null;
     }
 }
