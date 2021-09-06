@@ -1,16 +1,13 @@
 package com.bridgelabz;
 
-import java.sql.*;
-import java.util.LinkedList;
-import java.util.ListIterator;
-import java.util.Objects;
-import java.util.Scanner;
+import java.sql.SQLException;
+import java.util.*;
 
 public class AddressBook {
     public static void main(String[] args) throws SQLException {
         LinkedList<Contact> contact = new LinkedList<>();
         while (Database.rs.next()) {
-            sort(contact, Database.importContact());
+            contact.add(Database.importContact());
         }
         System.out.println("Hello welcome to your address book.");
         menu(contact);
@@ -25,49 +22,53 @@ public class AddressBook {
         System.out.println("Press 9 -> to stop the program.");
         Scanner optionScan = new Scanner(System.in);
         int option = optionScan.nextInt();
-        if (option == 1) {
-            printList(contact);
-            contactDetails(contact);
-            System.out.print("Enter 99 to continue to the menu : ");
-            Scanner menuOptScan = new Scanner(System.in);
-            int menuOpt = menuOptScan.nextInt();
-            if (menuOpt == 99) {
-                menu(contact);
+        switch (option) {
+            case 1 -> {
+                printList(contact);
+                contactDetails(contact);
+                System.out.print("Enter 99 to continue to the menu : ");
+                Scanner menuOptScan = new Scanner(System.in);
+                int menuOpt = menuOptScan.nextInt();
+                if (menuOpt == 99) {
+                    menu(contact);
+                }
             }
-        } else if (option == 2) {
-            Contact newContact = addContact();
-            Database.addToDatabase(newContact);
-            sort(contact, newContact);
-            printList(contact);
-            contactDetails(contact);
-            System.out.print("Enter 99 to continue to the menu : ");
-            Scanner menuOptScan = new Scanner(System.in);
-            int menuOpt = menuOptScan.nextInt();
-            if (menuOpt == 99) {
-                menu(contact);
+            case 2 -> {
+                Contact newContact = addContact();
+                Database.addToDatabase(newContact);
+                contact.add(newContact);
+                printList(contact);
+                contactDetails(contact);
+                System.out.print("Enter 99 to continue to the menu : ");
+                Scanner menuOptScan = new Scanner(System.in);
+                int menuOpt = menuOptScan.nextInt();
+                if (menuOpt == 99) {
+                    menu(contact);
+                }
             }
-        } else if (option == 3) {
-            printList(contact);
-            delete(contact);
-            printList(contact);
-            System.out.print("Enter 99 to continue to the menu : ");
-            Scanner menuOptScan = new Scanner(System.in);
-            int menuOpt = menuOptScan.nextInt();
-            if (menuOpt == 99) {
-                menu(contact);
+            case 3 -> {
+                printList(contact);
+                delete(contact);
+                printList(contact);
+                System.out.print("Enter 99 to continue to the menu : ");
+                Scanner menuOptScan = new Scanner(System.in);
+                int menuOpt = menuOptScan.nextInt();
+                if (menuOpt == 99) {
+                    menu(contact);
+                }
             }
-        } else if (option == 4) {
-            modify(contact);
-            printList(contact);
-            contactDetails(contact);
-            System.out.print("Enter 99 to continue to the menu : ");
-            Scanner menuOptScan = new Scanner(System.in);
-            int menuOpt = menuOptScan.nextInt();
-            if (menuOpt == 99) {
-                menu(contact);
+            case 4 -> {
+                modify(contact);
+                printList(contact);
+                contactDetails(contact);
+                System.out.print("Enter 99 to continue to the menu : ");
+                Scanner menuOptScan = new Scanner(System.in);
+                int menuOpt = menuOptScan.nextInt();
+                if (menuOpt == 99) {
+                    menu(contact);
+                }
             }
-        } else if (option == 9) {
-            System.exit(1);
+            case 9 -> System.exit(1);
         }
     }
 
@@ -84,6 +85,7 @@ public class AddressBook {
 
     // printList for printing the sorted contacts in the console
     public static void printList(LinkedList<Contact> contacts) {
+        Collections.sort(contacts);
         int index = -1;
         System.out.println("Position        |          Name");
         System.out.println("________________________________");
@@ -95,24 +97,6 @@ public class AddressBook {
                 System.out.println("  " + index + "            |          " + contact.getFirstName());
             }
         }
-    }
-
-    //sort method to sort all the contacts in alphabetical order using ListIterators
-    public static void sort(LinkedList<Contact> contactLinkedList, Contact contact) {
-        ListIterator<Contact> contactListIterator = contactLinkedList.listIterator();
-        while (contactListIterator.hasNext()) {
-            String compareStr = contactListIterator.next().getFirstName();
-            int compare = compareStr.compareTo(contact.getFirstName());
-            if (compare == 0) {
-                System.out.println("The same contact already exists.");
-                return;
-            } else if (compare > 0) {
-                contactListIterator.previous();
-                contactListIterator.add(contact);
-                return;
-            }
-        }
-        contactListIterator.add(contact);
     }
 
     // addContact method to add a new contact by creating a new class and returning it through addContact();
@@ -159,31 +143,32 @@ public class AddressBook {
         if (name.length() < 3) {
             System.out.println("Invalid name");
         } else contacts.removeIf(contact -> Objects.equals(name, contact.getFirstName().toLowerCase()));
+        String contactName = name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
+        Database.removeContact(contactName);
         System.out.println(name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase() + " has been deleted successfully");
     }
 
     //modify method to modify selected contact
     public static void modify(LinkedList<Contact> contacts) {
-        printList(contacts);
-        System.out.println("Enter the name of contact to modify : ");
+        System.out.print("Enter the NAME of contact to modify : ");
         Scanner nameScan = new Scanner(System.in);
         String name = nameScan.nextLine().toLowerCase();
-        ListIterator<Contact> contactListIterator = contacts.listIterator();
-        while (contactListIterator.hasNext()) {
-            if (Objects.equals(name, contactListIterator.next().getFirstName().toLowerCase())) {
-                contactListIterator.remove();
-                Contact newContact = addContact();
-                sort(contacts, newContact);
-                printList(contacts);
-                contactDetails(contacts);
-                System.out.println("Enter 99 to continue to the menu : ");
-                Scanner menuOptScan = new Scanner(System.in);
-                int menuOpt = menuOptScan.nextInt();
-                if (menuOpt == 99) {
-                    menu(contacts);
-                }
-
-            }
+        if (name.length() < 3) {
+            System.out.println("Invalid name");
+        } else contacts.removeIf(contact -> Objects.equals(name, contact.getFirstName().toLowerCase()));
+        String contactName = name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
+        Database.removeContact(contactName);
+        Contact newContact = addContact();
+        Database.addToDatabase(newContact);
+        contacts.add(newContact);
+        printList(contacts);
+        contactDetails(contacts);
+        System.out.print("Enter 99 to continue to the menu : ");
+        Scanner menuOptScan = new Scanner(System.in);
+        int menuOpt = menuOptScan.nextInt();
+        if (menuOpt == 99) {
+            menu(contacts);
         }
+        System.out.println(name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase() + " has been modified successfully");
     }
 }

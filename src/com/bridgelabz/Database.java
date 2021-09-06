@@ -34,6 +34,18 @@ public class Database {
         }
     }
 
+    public static void removeContact(String contactName) {
+        try {
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/contactdatabase", "Siraj12", "password");
+            Statement statement = conn.createStatement();
+            statement.execute("DELETE FROM "+tableName+" WHERE FirstName = '"+contactName+"'");
+            statement.close();
+            conn.close();
+        } catch (SQLException e) {
+            System.out.println(e.getErrorCode());
+        }
+    }
+
     // importing contacts from database
     public static Contact importContact() {
         try {
